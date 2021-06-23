@@ -138,3 +138,11 @@ _nogit*
 
 presets/
 _todo/
+
+
+.neptune/
+MNIST/
+MnistMLDataset/
+data/
+mlruns/
+        
