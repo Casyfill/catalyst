@@ -12,7 +12,7 @@ ratings = {
 
 
 @pytest.mark.parametrize("answer,args", ratings.items())
-def test_BRPloss(answer, args):
+def test_BRPLoss(answer, args):
     """@TODO: Docs. Contribution is welcome."""
     from catalyst.contrib.recsys.loss import BPRLoss
     loss = BPRLoss()
@@ -20,4 +20,10 @@ def test_BRPloss(answer, args):
     assert float(loss.forward(*args)) == pytest.approx(answer, 0.001)
     
 
+@pytest.mark.parametrize("answer,args", ratings.items())
+def test_WARPLoss(answer, args):
+    from catalyst.contrib.recsys.loss import WARPLoss
+    loss = WARPLoss()
+
+    assert float(loss.forward(*args)) > 0
 
