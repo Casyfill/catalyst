@@ -5,6 +5,8 @@ import torch.nn as nn
 from torch.autograd import Variable, Function
 from typing import Optional
 
+import numpy as np
+
 class BPRLoss(nn.Module):
     """ Implementation of 
     `BPRLoss, based on Bayesian Personalized Ranking`_.    
@@ -73,10 +75,10 @@ class WARP(Function):
             
             neg_labels_idx = all_labels_idx[msk]
 
-            while ((sample_score_margin < 0) and (num_trials < max_num_trials)):
+            while ((sample_score_margin < 0) and (num_trials < max_num_trials)):  # type: ignore
                  
-                #randomly sample a negative label
-                neg_idx = neg_labels_idx[torch.randint(0, neg_labels_idx, (1,))]  # example from here: https://github.com/pytorch/pytorch/issues/16897
+                #randomly sample a negative label, example from here: https://github.com/pytorch/pytorch/issues/16897
+                neg_idx = neg_labels_idx[torch.randint(0, neg_labels_idx.size(0), (1,))]
                 msk[neg_idx] = False
                 neg_labels_idx = all_labels_idx[msk]
                 
@@ -88,7 +90,7 @@ class WARP(Function):
                 # checks if no violating examples have been found 
                 continue
             else: 
-                loss_weight = torch.log(torch.floor((Y-1)/(num_trials)))
+                loss_weight = np.log(np.floor((Y-1)/(num_trials)))
                 L[i] = loss_weight
                 negative_indices[i, neg_idx] = 1  # type: ignore
                 
@@ -124,7 +126,7 @@ class WARPLoss(nn.Module):
         self.max_num_trials = max_num_trials
 
 
-    def forward(self, input, target): 
-        return WARP.apply(input, target, self.max_num_trials)
+    def forward(self, input_: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return WARP.apply(input_, target, self.max_num_trials)
 
     

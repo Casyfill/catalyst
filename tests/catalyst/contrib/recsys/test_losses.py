@@ -19,11 +19,12 @@ def test_BRPLoss(answer, args):
 
     assert float(loss.forward(*args)) == pytest.approx(answer, 0.001)
     
-
-@pytest.mark.parametrize("answer,args", ratings.items())
-def test_WARPLoss(answer, args):
+@pytest.mark.parametrize("max_num_trials", [None, 3])
+def test_WARPLoss(max_num_trials):
     from catalyst.contrib.recsys.loss import WARPLoss
-    loss = WARPLoss()
+    
+    loss = WARPLoss(max_num_trials=max_num_trials)
+    input_, target = torch.rand(10, 5), torch.rand(10, 5)
 
-    assert float(loss.forward(*args)) > 0
+    assert float(loss.forward(input_, target)) > 0  # dummy check for now
 
