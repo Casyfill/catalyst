@@ -150,3 +150,16 @@ class LogisticLoss(nn.Module):
         input_ = torch.clamp(input_, 0, 1)
         return F.binary_cross_entropy_with_logits(input_,
                                                   target, size_average=True)
+
+
+class PoissonLoss():
+
+    def __init__(self):
+        super(PoissonLoss, self).__init__()
+
+
+    def forward(self, input_: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return (input_ - target * torch.log(input_)).mean()
+
+
+    
