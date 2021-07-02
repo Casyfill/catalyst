@@ -2,6 +2,7 @@
 '''
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.autograd import Variable, Function
 from typing import Optional
 
@@ -129,4 +130,23 @@ class WARPLoss(nn.Module):
     def forward(self, input_: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         return WARP.apply(input_, target, self.max_num_trials)
 
-    
+
+class HingeLoss(nn.Module):
+
+    def __init__(self):
+        super(HingeLoss, self).__init__()
+        
+    def forward(self, positive_score:torch.Tensor, negative_score:torch.Tensor) -> torch.Tensor:
+
+        loss = torch.clamp(negative_score - positive_score + 1.0, 0.0)
+        return loss.mean()
+
+
+class LogisticLoss(nn.Module):
+    """Logistic Loss"""
+
+
+    def forward(self, input_: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        input_ = torch.clamp(input_, 0, 1)
+        return F.binary_cross_entropy_with_logits(input_,
+                                                  target, size_average=True)
