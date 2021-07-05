@@ -32,14 +32,14 @@ class BPRLoss(nn.Module):
         output.backward()
     """
 
-    def __init__(self, gamma: float = 1e-10):
+    def __init__(self):
         super(BPRLoss, self).__init__()
-        self.gamma = gamma
 
     def forward(self, positive_score: torch.Tensor, negative_score: torch.Tensor) -> torch.Tensor:
-        loss = -torch.log(self.gamma + torch.sigmoid(positive_score - negative_score)).mean()
-        return loss
-
+        log_prob = F.logsigmoid(positive_score - negative_score).sum()
+        # regularization = self.weight_decay * (u.norm(dim=1).pow(2).sum() + i.norm(dim=1).pow(2).sum() + j.norm(dim=1).pow(2).sum())
+        # + regularization
+        return -log_prob 
 
 class WARP(Function):
     """
